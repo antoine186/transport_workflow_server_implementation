@@ -12,3 +12,21 @@ You should only test flask_proxy_server.
 
 * Separately, open flask_proxy_server using VSCode.
 * Once again in VSCode, do CTRL+SHIFT+D. Press on the play button that appears on the left (not the one on the right).
+
+* Wait until "Running on http://127.0.0.1:5000" and ""Running on http://127.0.0.1:8000"" displays in both VSCode terminals.
+
+* Install the Postman API client
+* In Postman, click the "New" button in the top left. A new request template should popup.
+* Switch the template from GET to POST. Paste http://127.0.0.1:5000/request-transport in your url box.
+* Below the url box is a nav bar with "body". Click that and then select "raw". Paste the below in:
+
+{
+    "clientId": 1,
+    "productId": 1,
+    "quantity": 1,
+    "origin": "A",
+    "destination": "B",
+    "collectionTime": "2024-06-13T09:30:00"
+}
+
+* Press the "SEND" button and wait for Postman to display the result.
