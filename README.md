@@ -1,5 +1,10 @@
 # transport_workflow_server_implementation
 
+# !!! Important:
+
+The 3rd party server provided has been slightly modified to make my entire setup work.
+Please do not use the 3rd party server sent over to me for testing. Use the 3rd party server found in this repo instead and follow the below instructions.
+
 # A couple of considerations for testing
 
 Given that the 3rd party server isn't straightforward to test, it is worth temporarily doing the following in order to see an entire worflow run:
