@@ -6,6 +6,9 @@ import random
 
 app = Flask(__name__)
 
+if __name__ == '__main__':
+    app.run(threaded=True)
+
 # Mock database to store job and product information
 jobs = {}
 jobStatusQueries = {}
@@ -58,8 +61,15 @@ def request_job():
         timeWindow = generate_time_window()
         timeWindows[timeWindowKey] = timeWindow
     print(timeWindow)
-
+    
     collectionDateTime = datetime.fromisoformat(collectionTime)
+    
+    print("collectionDateTime < timeWindow['start']")
+    print(collectionDateTime < timeWindow['start'])
+    
+    print("collectionDateTime > timeWindow['end']")
+    print(collectionDateTime > timeWindow['end'])
+
     if collectionDateTime < timeWindow['start'] or collectionDateTime > timeWindow['end']:
         response = {'status': "REJECT"}
         print(f'Collection time "{format_date(collectionDateTime)}" is not within the suitable time window')
@@ -82,8 +92,11 @@ def request_job():
     return jsonify(response)
 
 # Endpoint 2: GET carrier/job/<jobId>/status
-@app.route('/carrier/job/<jobId>/status', methods=['GET'])
-def job_status(jobId):
+@app.route('/carrier/job/status', methods=['GET'])
+def job_status():
+    data = request.json
+    jobId = data.get('jobId')
+    
     job = jobs.get(jobId)
     if not job:
         response = {'status': "NOT FOUND"}
@@ -136,9 +149,11 @@ def job_status(jobId):
     return jsonify(response)
 
 # Endpoint 3: POST warehouse/<warehouseId>/release
-@app.route('/warehouse/<warehouseId>/release', methods=['POST'])
-def warehouse_release(warehouseId):
+@app.route('/warehouse/release', methods=['POST'])
+def warehouse_release():
     data = request.json
+    warehouseId = data.get('warehouseId')
+    
     print(f'/warehouse/{warehouseId}/release', data)
     if warehouseId not in ['A', 'B']:
         response = {'status': "ERROR", 'error': "Invalid warehouse ID"}
@@ -155,8 +170,12 @@ def warehouse_release(warehouseId):
     return jsonify(response)
 
 # Endpoint 4: GET warehouse/<warehouseId>/product/<productId>/status
-@app.route('/warehouse/<warehouseId>/product/<productId>/status', methods=['GET'])
-def product_status(warehouseId, productId):
+@app.route('/warehouse/product/status', methods=['GET'])
+def product_status():
+    data = request.json
+    productId = data.get('productId')
+    warehouseId = data.get('warehouseId')
+    
     if warehouseId not in ['A', 'B']:
         response = {'status': "ERROR", 'error': "Invalid warehouse ID"}
         print(f'Invalid warehouse ID "{warehouseId}"')
@@ -169,7 +188,8 @@ def product_status(warehouseId, productId):
         return jsonify(response)
 
     currentTime = datetime.now()
-    if landingEntry.get('landingTime', currentTime) < currentTime:
+        
+    if datetime.fromisoformat(landingEntry['collectionTime']) < currentTime:
         response = {'status': "LANDED"}
         print(f'Product "{productId}" at warehouse "{warehouseId}" has LANDED')
         filename = f'expected-landing-confirmation-{warehouseId}-{productId}.json'
