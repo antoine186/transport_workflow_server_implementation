@@ -6,6 +6,18 @@ Given that the 3rd party server isn't straightforward to test, it is worth tempo
 * In server.py in flask_base_server, replace line 25 with "start_hour = 9". You then must time the collectionTime from the API tester to be between the time window generated.
 * In server.py in flask_base_server at line 192, you won't see a landing confirmation unless you invert the < condition.
 
+# Tradeoffs in my implementation:
+
+The job workflow kick-off is supposed to be async and the API endpoint is not supposed to hang. The endpoint is supposed to immediately return.
+These two requirements are somewhat conflicting as async will normally make the endpoint wait either when using "await" or "asyncio.run()".
+
+Instead we made the endpoint kick-off a new separate thread each time it needs to trigger the workflow. This achieves concurrency normally found in async programming.
+Additionally, during the 2 polling phases of this task, we manually make the code wait as it polls the 3rd party service, thus mimicking the "await" feature of async programming.
+
+Trading off a purely async approach for an async one + a threaded one allows us to get the best of both worlds: async and an endpoint that returns immediately irrespective of workflow running time.
+
+This is even more sound as the underlying workflow only changes backend values and writes to files in the backend.
+
 # How to run the setup for testing
 ## Please use VSCode debugging (instructions included here) as otherwise the setup might not work as intended
 
