@@ -1,7 +1,10 @@
 # transport_workflow_server_implementation
 
 # A couple of considerations for testing
-* 
+
+Given that the 3rd party server isn't straightforward to test, it is worth temporarily doing the following in order to see an entire worflow run:
+* In server.py in flask_base_server, replace line 25 with "start_hour = 9". You then must time the collectionTime from the API tester to be between the time window generated.
+* In server.py in flask_base_server at line 192, you won't see a landing confirmation unless you invert the < condition.
 
 # How to run the setup for testing
 ## Please use VSCode debugging (instructions included here) as otherwise the setup might not work as intended
